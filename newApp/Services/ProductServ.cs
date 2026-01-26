@@ -30,14 +30,8 @@ namespace newApp.Services
             return await _unitOfWork.Products.GetByIdAsync(id);
         }
 
-        public async Task<Guid> CreateProductAsync(string name, decimal price)
+        public async Task<Guid> CreateProductAsync(Product product)
         {
-            var product = new Product
-            {
-                Id = Guid.NewGuid(),
-                Name = name,
-                Price = price
-            };
             await _unitOfWork.Products.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
             return product.Id;

@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using newApp.Data;
 using newApp.Extensions;
 using newApp.Models;
 using newApp.Models.entity;
+using newApp.Models.Enums;
 using newApp.Services;
 
 namespace newApp.Controllers
@@ -65,8 +68,9 @@ namespace newApp.Controllers
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            await SetupCreateEditViewBag();
             return View();
         }
 
@@ -77,10 +81,22 @@ namespace newApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _productService.CreateProductAsync(product.Name, product.Price);
+                product.Id = Guid.NewGuid();
+                product.CreatedAt = DateTime.UtcNow;
+                product.UpdatedAt = DateTime.UtcNow;
+                
+                // Generate SKU if not provided
+                if (string.IsNullOrEmpty(product.Sku))
+                {
+                    product.Sku = $"PRD-{DateTime.UtcNow:yyyyMMdd}-{product.Id.ToString()[..8].ToUpper()}";
+                }
+
+                await _productService.CreateProductAsync(product);
                 TempData["SuccessMessage"] = $"Product '{product.Name}' created successfully.";
                 return RedirectToAction(nameof(Index));
             }
+            
+            await SetupCreateEditViewBag();
             return View(product);
         }
 
@@ -92,6 +108,8 @@ namespace newApp.Controllers
             {
                 return NotFound();
             }
+            
+            await SetupCreateEditViewBag();
             return View(product);
         }
 
@@ -107,11 +125,28 @@ namespace newApp.Controllers
 
             if (ModelState.IsValid)
             {
+                product.UpdatedAt = DateTime.UtcNow;
                 await _productService.UpdateProductAsync(product);
                 TempData["SuccessMessage"] = $"Product '{product.Name}' updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
+            
+            await SetupCreateEditViewBag();
             return View(product);
+        }
+
+        private async Task SetupCreateEditViewBag()
+        {
+            // Get categories for dropdown
+            using var scope = HttpContext.RequestServices.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var categories = await context.Categories.Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
+            
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+            ViewBag.ProductStatuses = new SelectList(Enum.GetValues<ProductStatus>().Select(s => new { 
+                Value = (int)s, 
+                Text = s.ToString() 
+            }), "Value", "Text");
         }
 
         // POST: Products/Delete/5
