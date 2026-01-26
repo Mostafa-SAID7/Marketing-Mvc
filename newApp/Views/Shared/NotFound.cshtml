@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "Page Not Found";
+}
+
+<div class="content-card">
+    <div class="error-page">
+        <div class="error-code">404</div>
+        <div class="error-message">Oops! The page you're looking for doesn't exist.</div>
+        <p class="text-muted mb-4">The page you requested could not be found. It might have been moved, deleted, or you entered the wrong URL.</p>
+        
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-custom-primary">
+                <i class="fas fa-home me-2"></i>Go Home
+            </a>
+            <button onclick="history.back()" class="btn btn-custom-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Go Back
+            </button>
+        </div>
+        
+        <div class="mt-4">
+            <h5>Quick Links:</h5>
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <a asp-controller="Products" asp-action="Index" class="btn btn-outline-primary btn-sm">Products</a>
+                <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-primary btn-sm">Orders</a>
+                <a asp-controller="Items" asp-action="Index" class="btn btn-outline-primary btn-sm">Items</a>
+            </div>
+        </div>
+    </div>
+</div>

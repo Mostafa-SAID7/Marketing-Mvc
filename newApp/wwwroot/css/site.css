@@ -19,6 +19,7 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: #f8f9fa;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +29,242 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+/* Enhanced Styles */
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  border-radius: 0 0 15px 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.page-header h1 {
+  margin: 0;
+  font-weight: 300;
+  font-size: 2.5rem;
+}
+
+.page-header .breadcrumb {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.page-header .breadcrumb-item a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+.page-header .breadcrumb-item.active {
+  color: white;
+}
+
+.content-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e9ecef;
+}
+
+.action-buttons {
+  margin-bottom: 1.5rem;
+}
+
+.btn-custom-primary {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border: none;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-custom-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+  color: white;
+}
+
+.btn-custom-secondary {
+  background: #6c757d;
+  border: none;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-custom-secondary:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+  color: white;
+}
+
+.table-enhanced {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.table-enhanced thead {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+}
+
+.table-enhanced thead th {
+  border: none;
+  padding: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+.table-enhanced tbody tr {
+  transition: all 0.3s ease;
+}
+
+.table-enhanced tbody tr:hover {
+  background-color: #f8f9fa;
+  transform: scale(1.01);
+}
+
+.table-enhanced tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-top: 1px solid #e9ecef;
+}
+
+.form-enhanced {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.form-enhanced .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-enhanced .form-control {
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-enhanced .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-enhanced label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.alert-enhanced {
+  border: none;
+  border-radius: 15px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.alert-success-enhanced {
+  background: linear-gradient(45deg, #28a745, #20c997);
+  color: white;
+}
+
+.alert-danger-enhanced {
+  background: linear-gradient(45deg, #dc3545, #e83e8c);
+  color: white;
+}
+
+.alert-info-enhanced {
+  background: linear-gradient(45deg, #17a2b8, #6f42c1);
+  color: white;
+}
+
+.details-card {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.details-card .detail-row {
+  padding: 1rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.details-card .detail-row:last-child {
+  border-bottom: none;
+}
+
+.details-card .detail-label {
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+.details-card .detail-value {
+  font-size: 1.1rem;
+  color: #212529;
+}
+
+.error-page {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.error-page .error-code {
+  font-size: 8rem;
+  font-weight: 300;
+  color: #667eea;
+  margin: 0;
+  line-height: 1;
+}
+
+.error-page .error-message {
+  font-size: 1.5rem;
+  color: #6c757d;
+  margin: 1rem 0 2rem;
+}
+
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  transform: translateY(-2px);
+}
+
+.footer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.footer a {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer a:hover {
+  color: white;
 }

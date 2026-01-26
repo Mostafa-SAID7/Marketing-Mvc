@@ -1,8 +1,70 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
+    ViewBag.PageTitle = "Welcome to newApp";
+    ViewBag.Breadcrumbs = new List<(string Name, string Controller, string Action)>
+    {
+        ("Home", "Home", "Index")
+    };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@await Html.PartialAsync("_PageHeader")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="content-card text-center">
+                <i class="fas fa-box fa-3x text-primary mb-3"></i>
+                <h4>Products</h4>
+                <p class="text-muted">Manage your product catalog with full CRUD operations.</p>
+                <a asp-controller="Products" asp-action="Index" class="btn btn-custom-primary">
+                    <i class="fas fa-arrow-right me-2"></i>View Products
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="content-card text-center">
+                <i class="fas fa-shopping-cart fa-3x text-success mb-3"></i>
+                <h4>Orders</h4>
+                <p class="text-muted">Track and manage customer orders efficiently.</p>
+                <a asp-controller="Orders" asp-action="Index" class="btn btn-custom-primary">
+                    <i class="fas fa-arrow-right me-2"></i>View Orders
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="content-card text-center">
+                <i class="fas fa-list fa-3x text-warning mb-3"></i>
+                <h4>Items</h4>
+                <p class="text-muted">Organize and categorize your inventory items.</p>
+                <a asp-controller="Items" asp-action="Index" class="btn btn-custom-primary">
+                    <i class="fas fa-arrow-right me-2"></i>View Items
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="content-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3>Get Started</h3>
+                        <p class="text-muted mb-0">Welcome to your management dashboard. Use the navigation above or the quick links to manage your products, orders, and items.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="btn-group" role="group">
+                            <a asp-controller="Products" asp-action="Create" class="btn btn-outline-primary">
+                                <i class="fas fa-plus me-1"></i>Add Product
+                            </a>
+                            <a asp-controller="Orders" asp-action="Create" class="btn btn-outline-success">
+                                <i class="fas fa-plus me-1"></i>New Order
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
