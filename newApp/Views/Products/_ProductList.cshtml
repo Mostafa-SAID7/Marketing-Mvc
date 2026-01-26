@@ -6,6 +6,7 @@
         <table class="table table-enhanced mb-0">
             <thead>
                 <tr>
+                    <th class="d-none d-md-table-cell"><i class="fas fa-image me-2"></i>Image</th>
                     <th><i class="fas fa-tag me-2"></i>Name</th>
                     <th><i class="fas fa-dollar-sign me-2"></i>Price</th>
                     <th><i class="fas fa-cogs me-2"></i>Actions</th>
@@ -15,8 +16,34 @@
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <td class="d-none d-md-table-cell">
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" alt="@item.Name" class="product-image" />
+                            }
+                            else
+                            {
+                                <div class="product-image-placeholder">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            }
+                        </td>
                         <td>
-                            <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
+                            <div class="d-flex align-items-center">
+                                <div class="d-md-none me-2">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.Name" class="product-image" />
+                                    }
+                                    else
+                                    {
+                                        <div class="product-image-placeholder">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
+                            </div>
                         </td>
                         <td>
                             <span class="badge bg-success fs-6">$@Html.DisplayFor(modelItem => item.Price)</span>
@@ -25,13 +52,16 @@
                             <div class="btn-group" role="group">
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm" title="View Details">
                                     <i class="fas fa-eye"></i>
+                                    <span class="d-none d-lg-inline ms-1">Details</span>
                                 </a>
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm" title="Edit">
                                     <i class="fas fa-edit"></i>
+                                    <span class="d-none d-lg-inline ms-1">Edit</span>
                                 </a>
                                 <button type="button" class="btn btn-danger btn-sm" title="Delete"
                                         onclick="showDeleteModal('Product', '@item.Id', '@item.Name', '@Url.Action("Delete", "Products", new { id = item.Id })', 'Price: $@item.Price')">
                                     <i class="fas fa-trash"></i>
+                                    <span class="d-none d-lg-inline ms-1">Delete</span>
                                 </button>
                             </div>
                         </td>
