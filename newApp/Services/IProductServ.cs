@@ -1,7 +1,14 @@
-﻿namespace newApp.Services
+﻿using newApp.Data;
+using newApp.Models.entity;
+
+namespace newApp.Services
 {
     public interface IProductServ
     {
-        Task<Guid> CreateProductAsync(string name);
+        Task<IEnumerable<Product>> GetAllProductsAsync();
+        Task<Product?> GetProductByIdAsync(Guid id);
+        Task<Guid> CreateProductAsync(string name, decimal price);
+        Task UpdateProductAsync(Product product);
+        Task DeleteProductAsync(Guid id);
     }
 }

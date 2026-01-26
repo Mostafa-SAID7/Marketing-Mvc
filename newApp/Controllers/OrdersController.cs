@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using newApp.Models;
+using newApp.Models.entity;
 using newApp.Services;
 
 namespace newApp.Controllers
 {
-   
-    [Route("orders")]
     public class OrdersController : Controller
     {
         private readonly IOrderService _orderService;
@@ -15,12 +14,31 @@ namespace newApp.Controllers
             _orderService = orderService;
         }
 
-        [HttpGet]
+        // GET: Orders
+        public async Task<IActionResult> Index()
+        {
+            var orders = await _orderService.GetAllOrdersAsync();
+            return View(orders);
+        }
+
+        // GET: Orders/Details/5
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return View(order);
+        }
+
+        // GET: Orders/Create
         public IActionResult Create()
         {
             return View(new CreateOrderViewModel());
         }
 
+        // POST: Orders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateOrderViewModel model)
@@ -35,7 +53,45 @@ namespace newApp.Controllers
 
             return View(model);
         }
+
+        // GET: Orders/Edit/5
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return View(order);
+        }
+
+        // POST: Orders/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, Order order)
+        {
+            if (id != order.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                await _orderService.UpdateOrderAsync(order);
+                TempData["SuccessMessage"] = "Order updated successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(order);
+        }
+
+        // POST: Orders/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _orderService.DeleteOrderAsync(id);
+            TempData["SuccessMessage"] = "Order deleted successfully.";
+            return RedirectToAction(nameof(Index));
+        }
     }
-
-
 }

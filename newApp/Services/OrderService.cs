@@ -1,15 +1,25 @@
-﻿using newApp.Models.entity;
-using newApp.Repositoriers;
+﻿using newApp.Data;
+using newApp.Models.entity;
 
 namespace newApp.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IOrderRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public OrderService(IOrderRepository repository)
+        public OrderService(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<IEnumerable<Order>> GetAllOrdersAsync()
+        {
+            return await _unitOfWork.Orders.GetAllAsync();
+        }
+
+        public async Task<Order?> GetOrderByIdAsync(Guid id)
+        {
+            return await _unitOfWork.Orders.GetByIdAsync(id);
         }
 
         public async Task<Guid> CreateOrderAsync(decimal total)
@@ -21,9 +31,21 @@ namespace newApp.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _repository.AddAsync(order);
+            await _unitOfWork.Orders.AddAsync(order);
+            await _unitOfWork.SaveChangesAsync();
             return order.Id;
         }
-    }
 
+        public async Task UpdateOrderAsync(Order order)
+        {
+            await _unitOfWork.Orders.UpdateAsync(order);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task DeleteOrderAsync(Guid id)
+        {
+            await _unitOfWork.Orders.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+        }
+    }
 }
