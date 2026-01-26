@@ -1,4 +1,4 @@
-@model IEnumerable<newApp.Models.entity.Product>
+@model newApp.Models.PaginatedResult<newApp.Models.entity.Product>
 
 @{
     ViewData["Title"] = "Products";
@@ -12,13 +12,7 @@
 @await Html.PartialAsync("_PageHeader")
 
 <div class="container">
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success-enhanced alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
+    @await Html.PartialAsync("_SearchFilter")
 
     <div class="content-card">
         <div class="action-buttons">
@@ -27,57 +21,35 @@
             </a>
         </div>
 
-        @if (Model.Any())
-        {
-            <div class="table-responsive">
-                <table class="table table-enhanced mb-0">
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-tag me-2"></i>Name</th>
-                            <th><i class="fas fa-dollar-sign me-2"></i>Price</th>
-                            <th><i class="fas fa-cogs me-2"></i>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>
-                                    <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
-                                </td>
-                                <td>
-                                    <span class="badge bg-success fs-6">$@Html.DisplayFor(modelItem => item.Price)</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-danger btn-sm" title="Delete"
-                                                onclick="showDeleteModal('Product', '@item.Id', '@item.Name', '@Url.Action("Delete", "Products", new { id = item.Id })', 'Price: $@item.Price')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="text-center py-5">
-                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                <h4 class="text-muted">No Products Found</h4>
-                <p class="text-muted">Start by creating your first product.</p>
-                <a asp-action="Create" class="btn btn-custom-primary">
-                    <i class="fas fa-plus me-2"></i>Create First Product
-                </a>
-            </div>
-        }
+        <div id="resultsContainer">
+            @await Html.PartialAsync("_ProductList", Model.Items)
+        </div>
+
+        <div id="paginationContainer"></div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize search and filter functionality
+            const searchManager = new SearchFilterManager({
+                searchUrl: '@Url.Action("Index", "Products")',
+                filterSelects: ['#PriceRange']
+            });
+
+            // Set initial data if we have results
+            @if (Model.TotalItems > 0)
+            {
+                <text>
+                searchManager.totalItems = @Model.TotalItems;
+                searchManager.currentPage = @Model.CurrentPage;
+                searchManager.pageSize = @Model.PageSize;
+                searchManager.totalPages = @Model.TotalPages;
+                searchManager.updateResultsInfo();
+                searchManager.updatePagination();
+                </text>
+            }
+        });
+    </script>
+}

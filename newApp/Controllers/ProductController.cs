@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using newApp.Extensions;
+using newApp.Models;
 using newApp.Models.entity;
 using newApp.Services;
 
@@ -16,9 +19,37 @@ namespace newApp.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ProductSearchRequest request)
         {
-            var products = await _productService.GetAllProductsAsync();
+            // Set up filter options for the view
+            ViewBag.FilterOptions = new Dictionary<string, List<SelectListItem>>
+            {
+                ["PriceRange"] = new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "$0 - $50", Value = "0-50" },
+                    new SelectListItem { Text = "$51 - $100", Value = "51-100" },
+                    new SelectListItem { Text = "$101 - $500", Value = "101-500" },
+                    new SelectListItem { Text = "$500+", Value = "500+" }
+                }
+            };
+
+            ViewBag.SearchPlaceholder = "Search products by name...";
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                // AJAX request - return partial view with data
+                var result = await _productService.GetProductsAsync(request);
+                return Json(new
+                {
+                    html = await this.RenderViewAsync("_ProductList", result.Items),
+                    totalItems = result.TotalItems,
+                    currentPage = result.CurrentPage,
+                    totalPages = result.TotalPages
+                });
+            }
+
+            // Regular request - return full view
+            var products = await _productService.GetProductsAsync(request);
             return View(products);
         }
 
@@ -47,7 +78,7 @@ namespace newApp.Controllers
             if (ModelState.IsValid)
             {
                 await _productService.CreateProductAsync(product.Name, product.Price);
-                TempData["SuccessMessage"] = "Product created successfully.";
+                TempData["SuccessMessage"] = $"Product '{product.Name}' created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -77,7 +108,7 @@ namespace newApp.Controllers
             if (ModelState.IsValid)
             {
                 await _productService.UpdateProductAsync(product);
-                TempData["SuccessMessage"] = "Product updated successfully.";
+                TempData["SuccessMessage"] = $"Product '{product.Name}' updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -88,8 +119,16 @@ namespace newApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _productService.DeleteProductAsync(id);
-            TempData["SuccessMessage"] = "Product deleted successfully.";
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product != null)
+            {
+                await _productService.DeleteProductAsync(id);
+                TempData["SuccessMessage"] = $"Product '{product.Name}' deleted successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Product not found.";
+            }
             return RedirectToAction(nameof(Index));
         }
     }

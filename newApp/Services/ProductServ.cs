@@ -1,4 +1,5 @@
 ﻿using newApp.Data;
+using newApp.Models;
 using newApp.Models.entity;
 
 namespace newApp.Services
@@ -17,6 +18,11 @@ namespace newApp.Services
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
             return await _unitOfWork.Products.GetAllAsync();
+        }
+
+        public async Task<PaginatedResult<Product>> GetProductsAsync(ProductSearchRequest request)
+        {
+            return await _unitOfWork.Products.GetProductsAsync(request);
         }
 
         public async Task<Product?> GetProductByIdAsync(Guid id)

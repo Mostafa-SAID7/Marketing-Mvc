@@ -268,3 +268,159 @@ body {
 .footer a:hover {
   color: white;
 }
+
+/* Toaster Notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1055;
+}
+
+.toast-custom {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 300px;
+}
+
+.toast-success {
+  background: linear-gradient(45deg, #28a745, #20c997);
+  color: white;
+}
+
+.toast-error {
+  background: linear-gradient(45deg, #dc3545, #e83e8c);
+  color: white;
+}
+
+.toast-warning {
+  background: linear-gradient(45deg, #ffc107, #fd7e14);
+  color: white;
+}
+
+.toast-info {
+  background: linear-gradient(45deg, #17a2b8, #6f42c1);
+  color: white;
+}
+
+.toast-custom .toast-header {
+  background: transparent;
+  border: none;
+  color: inherit;
+}
+
+.toast-custom .toast-body {
+  font-weight: 500;
+}
+
+.toast-custom .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+/* Search and Filter Components */
+.search-filter-container {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.search-input {
+  border-radius: 25px;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.filter-select {
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.search-btn {
+  border-radius: 25px;
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+}
+
+.clear-btn {
+  border-radius: 25px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+}
+
+/* Pagination */
+.pagination-custom {
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.pagination-custom .page-link {
+  border: none;
+  border-radius: 10px;
+  margin: 0 2px;
+  padding: 0.75rem 1rem;
+  color: #667eea;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.pagination-custom .page-link:hover {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.pagination-custom .page-item.active .page-link {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+}
+
+.pagination-custom .page-item.disabled .page-link {
+  color: #6c757d;
+  background: #f8f9fa;
+}
+
+/* Results Info */
+.results-info {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #667eea;
+}
+
+.results-info .results-count {
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: none;
+  text-align: center;
+  padding: 2rem;
+}
+
+.spinner-border-custom {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+  border-color: #667eea;
+  border-right-color: transparent;
+}

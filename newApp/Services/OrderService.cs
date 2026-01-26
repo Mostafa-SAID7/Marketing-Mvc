@@ -1,4 +1,5 @@
 ﻿using newApp.Data;
+using newApp.Models;
 using newApp.Models.entity;
 
 namespace newApp.Services
@@ -15,6 +16,11 @@ namespace newApp.Services
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
         {
             return await _unitOfWork.Orders.GetAllAsync();
+        }
+
+        public async Task<PaginatedResult<Order>> GetOrdersAsync(OrderSearchRequest request)
+        {
+            return await _unitOfWork.Orders.GetOrdersAsync(request);
         }
 
         public async Task<Order?> GetOrderByIdAsync(Guid id)
