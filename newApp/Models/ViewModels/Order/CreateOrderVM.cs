@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace newApp.Models
+namespace newApp.Models.ViewModels.Order
 {
-    public class CreateOrderViewModel
+    public class CreateOrderVM
     {
         [Required]
         [Range(1, double.MaxValue, ErrorMessage = "Total must be greater than zero")]

@@ -13,6 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductServ, ProductServ>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(

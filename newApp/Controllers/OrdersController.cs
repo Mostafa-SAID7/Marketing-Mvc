@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using newApp.Models;
 using newApp.Models.entity;
+using newApp.Models.ViewModels.Order;
 using newApp.Services;
 
 namespace newApp.Controllers
@@ -35,13 +36,13 @@ namespace newApp.Controllers
         // GET: Orders/Create
         public IActionResult Create()
         {
-            return View(new CreateOrderViewModel());
+            return View(new CreateOrderVM());
         }
 
         // POST: Orders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateOrderViewModel model)
+        public async Task<IActionResult> Create(CreateOrderVM model)
         {
             if (!ModelState.IsValid)
                 return View(model);
