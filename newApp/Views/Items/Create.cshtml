@@ -1,0 +1,36 @@
+﻿@model Item
+@{
+    ViewData["Title"] = "Create Item";
+}
+<h1 class="text-bg-dark text-white">Create Item</h1>
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price" class="control-label"></label>
+        <textarea asp-for="Price" class="form-control"></textarea>
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Created" class="control-label"></label>
+        <textarea asp-for="Created" class="form-control"></textarea>
+        <span asp-validation-for="Created" class="text-danger"></span>
+    </div>
+    <div class="form-group row justify-content-around">
+        <button type="submit" value="Create" class="btn btn-primary" >Save</button>
+        <a asp-action="Index" asp-controller="Items"  class="btn btn-Black" >Back</a>
+
+    </div>
+    
+</form>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
