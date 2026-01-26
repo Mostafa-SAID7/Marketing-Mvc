@@ -1,17 +1,36 @@
+using System.ComponentModel.DataAnnotations;
+using newApp.Models.Base;
+
 namespace newApp.Models.entity
 {
-    public class OrderItem
+    public class OrderItem : BaseEntity
     {
-        public Guid Id { get; set; }
+        [Required]
         public Guid OrderId { get; set; }
+        
+        [Required]
         public Guid ProductId { get; set; }
+        
+        [Required]
+        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
+        
+        [Required]
+        [Range(0.01, double.MaxValue)]
         public decimal UnitPrice { get; set; }
-        public decimal TotalPrice => Quantity * UnitPrice;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [StringLength(200)]
+        public string? ProductName { get; set; } // Snapshot of product name at time of order
+        
+        [StringLength(100)]
+        public string? ProductSku { get; set; } // Snapshot of product SKU at time of order
 
         // Navigation properties
         public virtual Order Order { get; set; } = null!;
         public virtual Product Product { get; set; } = null!;
+
+        // Computed properties
+        public decimal TotalPrice => Quantity * UnitPrice;
+        public decimal LineTotal => TotalPrice; // Alias for clarity
     }
 }

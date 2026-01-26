@@ -1,33 +1,71 @@
-﻿using newApp.Models.Enums;
+using System.ComponentModel.DataAnnotations;
+using newApp.Models.Base;
+using newApp.Models.Enums;
 
 namespace newApp.Models.entity
 {
-    public class Product
+    public class Product : BaseEntity
     {
-        public Guid Id { get; set; }
+        [Required]
+        [StringLength(200)]
         public string Name { get; set; } = string.Empty;
+        
+        [StringLength(2000)]
         public string Description { get; set; } = string.Empty;
+        
+        [Required]
+        [Range(0.01, double.MaxValue)]
         public decimal Price { get; set; }
+        
+        [Range(0.01, double.MaxValue)]
         public decimal? CompareAtPrice { get; set; }
+        
+        [Range(0.01, double.MaxValue)]
         public decimal? CostPrice { get; set; }
+        
+        [Url]
+        [StringLength(500)]
         public string? ImageUrl { get; set; }
+        
+        [StringLength(200)]
         public string? ImageAlt { get; set; }
+        
+        [StringLength(100)]
         public string? Sku { get; set; }
+        
+        [StringLength(100)]
         public string? Barcode { get; set; }
+        
+        [Range(0, int.MaxValue)]
         public int StockQuantity { get; set; }
+        
+        [Range(0, int.MaxValue)]
         public int? LowStockThreshold { get; set; }
+        
         public bool TrackQuantity { get; set; } = true;
+        
+        [Range(0, double.MaxValue)]
         public decimal? Weight { get; set; }
+        
+        [StringLength(10)]
         public string? WeightUnit { get; set; } = "kg";
+        
         public ProductStatus Status { get; set; } = ProductStatus.Draft;
+        
         public bool IsFeatured { get; set; } = false;
+        
         public int SortOrder { get; set; } = 0;
+        
+        [StringLength(200)]
         public string? MetaTitle { get; set; }
+        
+        [StringLength(500)]
         public string? MetaDescription { get; set; }
+        
+        [StringLength(1000)]
         public string? Tags { get; set; }
+        
         public Guid? CategoryId { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties
         public virtual Category? Category { get; set; }
@@ -41,5 +79,32 @@ namespace newApp.Models.entity
             : null;
         public bool IsLowStock => TrackQuantity && LowStockThreshold.HasValue && StockQuantity <= LowStockThreshold;
         public bool IsOutOfStock => TrackQuantity && StockQuantity <= 0;
+        
+        // Business methods
+        public void UpdateStock(int quantity)
+        {
+            if (TrackQuantity)
+            {
+                StockQuantity = Math.Max(0, StockQuantity + quantity);
+                UpdatedAt = DateTime.UtcNow;
+            }
+        }
+        
+        public bool CanFulfillOrder(int requestedQuantity)
+        {
+            return !TrackQuantity || StockQuantity >= requestedQuantity;
+        }
+        
+        public void MarkAsFeatured()
+        {
+            IsFeatured = true;
+            UpdatedAt = DateTime.UtcNow;
+        }
+        
+        public void RemoveFromFeatured()
+        {
+            IsFeatured = false;
+            UpdatedAt = DateTime.UtcNow;
+        }
     }
 }

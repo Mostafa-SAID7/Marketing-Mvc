@@ -17,12 +17,12 @@ namespace newApp.Repositoriers
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.Include(p => p.Category).ToListAsync();
         }
 
         public async Task<PaginatedResult<Product>> GetProductsAsync(ProductSearchRequest request)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products.Include(p => p.Category).AsQueryable();
 
             // Apply search filter
             if (!string.IsNullOrEmpty(request.Search))
@@ -106,7 +106,9 @@ namespace newApp.Repositoriers
 
         public async Task<Product?> GetByIdAsync(Guid id)
         {
-            return await _context.Products.FindAsync(id);
+            return await _context.Products
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task AddAsync(Product product)
@@ -117,13 +119,12 @@ namespace newApp.Repositoriers
             await _context.Products.AddAsync(product);
         }
 
-        public Task UpdateAsync(Product product)
+        public void Update(Product product)
         {
             if (product is null)
                 throw new ArgumentNullException(nameof(product));
 
             _context.Products.Update(product);
-            return Task.CompletedTask;
         }
 
         public async Task DeleteAsync(Guid id)
@@ -133,6 +134,14 @@ namespace newApp.Repositoriers
             {
                 _context.Products.Remove(product);
             }
+        }
+
+        public void Delete(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            _context.Products.Remove(product);
         }
     }
 }

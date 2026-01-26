@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using newApp.Models.entity;
 using newApp.Models.Enums;
+using newApp.Models.ObjectValues;
 
 namespace newApp.Data
 {
@@ -75,43 +76,61 @@ namespace newApp.Data
                     new Customer
                     {
                         Id = Guid.NewGuid(),
-                        FirstName = "John",
-                        LastName = "Doe",
+                        Name = new PersonName
+                        {
+                            FirstName = "John",
+                            LastName = "Doe"
+                        },
                         Email = "john.doe@example.com",
                         Phone = "+1-555-0123",
-                        Address = "123 Main St",
-                        City = "New York",
-                        State = "NY",
-                        ZipCode = "10001",
-                        Country = "USA",
+                        Address = new Address
+                        {
+                            Street = "123 Main St",
+                            City = "New York",
+                            State = "NY",
+                            ZipCode = "10001",
+                            Country = "USA"
+                        },
                         IsActive = true
                     },
                     new Customer
                     {
                         Id = Guid.NewGuid(),
-                        FirstName = "Jane",
-                        LastName = "Smith",
+                        Name = new PersonName
+                        {
+                            FirstName = "Jane",
+                            LastName = "Smith"
+                        },
                         Email = "jane.smith@example.com",
                         Phone = "+1-555-0124",
-                        Address = "456 Oak Ave",
-                        City = "Los Angeles",
-                        State = "CA",
-                        ZipCode = "90210",
-                        Country = "USA",
+                        Address = new Address
+                        {
+                            Street = "456 Oak Ave",
+                            City = "Los Angeles",
+                            State = "CA",
+                            ZipCode = "90210",
+                            Country = "USA"
+                        },
                         IsActive = true
                     },
                     new Customer
                     {
                         Id = Guid.NewGuid(),
-                        FirstName = "Mike",
-                        LastName = "Johnson",
+                        Name = new PersonName
+                        {
+                            FirstName = "Mike",
+                            LastName = "Johnson"
+                        },
                         Email = "mike.johnson@example.com",
                         Phone = "+1-555-0125",
-                        Address = "789 Pine Rd",
-                        City = "Chicago",
-                        State = "IL",
-                        ZipCode = "60601",
-                        Country = "USA",
+                        Address = new Address
+                        {
+                            Street = "789 Pine Rd",
+                            City = "Chicago",
+                            State = "IL",
+                            ZipCode = "60601",
+                            Country = "USA"
+                        },
                         IsActive = true
                     }
                 };
@@ -282,13 +301,14 @@ namespace newApp.Data
                         CustomerId = customers[0].Id,
                         CustomerEmail = customers[0].Email,
                         CustomerPhone = customers[0].Phone,
-                        ShippingFirstName = customers[0].FirstName,
-                        ShippingLastName = customers[0].LastName,
-                        ShippingAddress = customers[0].Address ?? "",
-                        ShippingCity = customers[0].City ?? "",
-                        ShippingState = customers[0].State ?? "",
-                        ShippingZipCode = customers[0].ZipCode ?? "",
-                        ShippingCountry = customers[0].Country ?? "",
+                        CustomerName = new PersonName(customers[0].Name.FirstName, customers[0].Name.LastName),
+                        ShippingAddress = new Address(
+                            customers[0].Address?.Street ?? "123 Main St",
+                            customers[0].Address?.City ?? "New York",
+                            customers[0].Address?.State ?? "NY",
+                            customers[0].Address?.ZipCode ?? "10001",
+                            customers[0].Address?.Country ?? "USA"
+                        ),
                         SubTotal = 249.98m,
                         TaxAmount = 20.00m,
                         ShippingAmount = 9.99m,
@@ -334,13 +354,14 @@ namespace newApp.Data
                         CustomerId = customers[1].Id,
                         CustomerEmail = customers[1].Email,
                         CustomerPhone = customers[1].Phone,
-                        ShippingFirstName = customers[1].FirstName,
-                        ShippingLastName = customers[1].LastName,
-                        ShippingAddress = customers[1].Address ?? "",
-                        ShippingCity = customers[1].City ?? "",
-                        ShippingState = customers[1].State ?? "",
-                        ShippingZipCode = customers[1].ZipCode ?? "",
-                        ShippingCountry = customers[1].Country ?? "",
+                        CustomerName = new PersonName(customers[1].Name.FirstName, customers[1].Name.LastName),
+                        ShippingAddress = new Address(
+                            customers[1].Address?.Street ?? "456 Oak Ave",
+                            customers[1].Address?.City ?? "Los Angeles",
+                            customers[1].Address?.State ?? "CA",
+                            customers[1].Address?.ZipCode ?? "90210",
+                            customers[1].Address?.Country ?? "USA"
+                        ),
                         SubTotal = 179.98m,
                         TaxAmount = 14.40m,
                         ShippingAmount = 9.99m,

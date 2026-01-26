@@ -9,7 +9,8 @@ namespace newApp.Repositoriers
         Task<PaginatedResult<Product>> GetProductsAsync(ProductSearchRequest request);
         Task<Product?> GetByIdAsync(Guid id);
         Task AddAsync(Product product);
-        Task UpdateAsync(Product product);
+        void Update(Product product);
         Task DeleteAsync(Guid id);
+        void Delete(Product product);
     }
 }

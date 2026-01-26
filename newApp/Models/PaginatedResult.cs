@@ -27,6 +27,7 @@ namespace newApp.Models
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
         public string PriceRange { get; set; } = string.Empty;
+        public string Filter { get; set; } = string.Empty;
     }
 
     public class OrderSearchRequest : SearchFilterRequest

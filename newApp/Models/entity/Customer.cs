@@ -1,26 +1,82 @@
+using System.ComponentModel.DataAnnotations;
+using newApp.Models.Base;
+using newApp.Models.ObjectValues;
+
 namespace newApp.Models.entity
 {
-    public class Customer
+    public class Customer : BaseEntity
     {
-        public Guid Id { get; set; }
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
+        // Personal Information using Value Object
+        public PersonName Name { get; set; } = new();
+        
+        [Required]
+        [EmailAddress]
+        [StringLength(200)]
         public string Email { get; set; } = string.Empty;
+        
+        [Phone]
+        [StringLength(20)]
         public string? Phone { get; set; }
-        public string? Address { get; set; }
-        public string? City { get; set; }
-        public string? State { get; set; }
-        public string? ZipCode { get; set; }
-        public string? Country { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        // Address using Value Object
+        public Address? Address { get; set; }
+        
         public bool IsActive { get; set; } = true;
+        
+        [StringLength(1000)]
+        public string? Notes { get; set; }
+        
+        public DateTime? LastLoginAt { get; set; }
+        
+        public DateTime? EmailVerifiedAt { get; set; }
+        
+        public DateTime? PhoneVerifiedAt { get; set; }
 
         // Navigation properties
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
         // Computed properties
-        public string FullName => $"{FirstName} {LastName}";
-        public string FullAddress => $"{Address}, {City}, {State} {ZipCode}, {Country}".Trim(' ', ',');
+        public string FullName => Name.FullName;
+        public bool HasAddress => Address != null;
+        public bool IsEmailVerified => EmailVerifiedAt.HasValue;
+        public bool IsPhoneVerified => PhoneVerifiedAt.HasValue;
+        public int TotalOrders => Orders?.Count(o => !o.IsDeleted) ?? 0;
+        public decimal TotalSpent => Orders?.Where(o => !o.IsDeleted).Sum(o => o.Total) ?? 0;
+        
+        public string StatusBadgeClass => IsActive switch
+        {
+            true when IsDeleted => "bg-danger",
+            true => "bg-success",
+            false => "bg-secondary"
+        };
+        
+        // Business methods
+        public void VerifyEmail()
+        {
+            EmailVerifiedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
+        
+        public void VerifyPhone()
+        {
+            PhoneVerifiedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
+        
+        public void UpdateLastLogin()
+        {
+            LastLoginAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
+        
+        public void Deactivate(string? reason = null)
+        {
+            IsActive = false;
+            if (!string.IsNullOrEmpty(reason))
+            {
+                Notes = string.IsNullOrEmpty(Notes) ? $"Deactivated: {reason}" : $"{Notes}\nDeactivated: {reason}";
+            }
+            UpdatedAt = DateTime.UtcNow;
+        }
     }
 }

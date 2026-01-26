@@ -23,6 +23,7 @@ namespace newApp.Models.ViewModels.Product
         public decimal? SavingsPercentage => CompareAtPrice.HasValue && CompareAtPrice > 0 
             ? Math.Round(((CompareAtPrice.Value - Price) / CompareAtPrice.Value) * 100, 2) 
             : null;
+        public decimal DiscountPercentage => SavingsPercentage ?? 0;
         public bool IsOutOfStock => TrackQuantity && StockQuantity <= 0;
         public string StatusBadgeClass => Status switch
         {

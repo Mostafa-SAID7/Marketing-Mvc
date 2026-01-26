@@ -1,10 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using newApp.Data;
 using newApp.Extensions;
+using newApp.Features.Products.Commands.CreateProduct;
+using newApp.Features.Products.Commands.DeleteProduct;
+using newApp.Features.Products.Commands.UpdateProduct;
+using newApp.Features.Products.Queries.GetProductById;
+using newApp.Features.Products.Queries.GetProducts;
 using newApp.Models;
-using newApp.Models.entity;
 using newApp.Models.Enums;
 using newApp.Models.ViewModels.Product;
 using newApp.Services;
@@ -13,13 +19,19 @@ namespace newApp.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly IProductServ _productService;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
         private readonly IImageService _imageService;
         private readonly ILogger<ProductsController> _logger;
         
-        public ProductsController(IProductServ productService, IImageService imageService, ILogger<ProductsController> logger)
+        public ProductsController(
+            IMediator mediator,
+            IMapper mapper,
+            IImageService imageService,
+            ILogger<ProductsController> logger)
         {
-            _productService = productService;
+            _mediator = mediator;
+            _mapper = mapper;
             _imageService = imageService;
             _logger = logger;
         }
@@ -41,10 +53,20 @@ namespace newApp.Controllers
 
             ViewBag.SearchPlaceholder = "Search products by name...";
 
+            var query = new GetProductsQuery
+            {
+                SearchTerm = request.Search,
+                PriceRange = request.PriceRange,
+                SortBy = request.SortBy,
+                SortOrder = request.SortDirection,
+                Page = request.Page,
+                PageSize = request.PageSize
+            };
+
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 // AJAX request - return partial view with data
-                var result = await _productService.GetProductsAsync(request);
+                var result = await _mediator.Send(query);
                 return Json(new
                 {
                     html = await this.RenderViewAsync("_ProductList", result.Items),
@@ -55,14 +77,14 @@ namespace newApp.Controllers
             }
 
             // Regular request - return full view
-            var products = await _productService.GetProductsAsync(request);
+            var products = await _mediator.Send(query);
             return View(products);
         }
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(Guid id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
+            var product = await _mediator.Send(new GetProductByIdQuery(id));
             if (product == null)
             {
                 return NotFound();
@@ -84,32 +106,7 @@ namespace newApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var product = new Product
-                {
-                    Id = Guid.NewGuid(),
-                    Name = viewModel.Name,
-                    Description = viewModel.Description,
-                    Price = viewModel.Price,
-                    CompareAtPrice = viewModel.CompareAtPrice,
-                    CostPrice = viewModel.CostPrice,
-                    ImageAlt = viewModel.ImageAlt,
-                    Sku = viewModel.Sku,
-                    Barcode = viewModel.Barcode,
-                    StockQuantity = viewModel.StockQuantity,
-                    LowStockThreshold = viewModel.LowStockThreshold,
-                    TrackQuantity = viewModel.TrackQuantity,
-                    Weight = viewModel.Weight,
-                    WeightUnit = viewModel.WeightUnit,
-                    Status = viewModel.Status,
-                    IsFeatured = viewModel.IsFeatured,
-                    SortOrder = viewModel.SortOrder,
-                    MetaTitle = viewModel.MetaTitle,
-                    MetaDescription = viewModel.MetaDescription,
-                    Tags = viewModel.Tags,
-                    CategoryId = viewModel.CategoryId,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+                var command = _mapper.Map<CreateProductCommand>(viewModel);
 
                 // Handle image upload
                 if (viewModel.ImageFile != null && _imageService.IsValidImageFile(viewModel.ImageFile))
@@ -117,7 +114,7 @@ namespace newApp.Controllers
                     var imageUrl = await _imageService.UploadImageAsync(viewModel.ImageFile, "products");
                     if (imageUrl != null)
                     {
-                        product.ImageUrl = imageUrl;
+                        command.ImageUrl = imageUrl;
                     }
                     else
                     {
@@ -128,16 +125,10 @@ namespace newApp.Controllers
                 }
                 else if (!string.IsNullOrEmpty(viewModel.ImageUrl))
                 {
-                    product.ImageUrl = viewModel.ImageUrl;
+                    command.ImageUrl = viewModel.ImageUrl;
                 }
 
-                // Generate SKU if not provided
-                if (string.IsNullOrEmpty(product.Sku))
-                {
-                    product.Sku = $"PRD-{DateTime.UtcNow:yyyyMMdd}-{product.Id.ToString()[..8].ToUpper()}";
-                }
-
-                await _productService.CreateProductAsync(product);
+                var product = await _mediator.Send(command);
                 TempData["SuccessMessage"] = $"Product '{product.Name}' created successfully.";
                 return RedirectToAction(nameof(Index));
             }
@@ -149,41 +140,13 @@ namespace newApp.Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(Guid id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
+            var product = await _mediator.Send(new GetProductByIdQuery(id));
             if (product == null)
             {
                 return NotFound();
             }
 
-            var viewModel = new ProductEditVM
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                CompareAtPrice = product.CompareAtPrice,
-                CostPrice = product.CostPrice,
-                ImageUrl = product.ImageUrl,
-                CurrentImageUrl = product.ImageUrl,
-                ImageAlt = product.ImageAlt,
-                Sku = product.Sku,
-                Barcode = product.Barcode,
-                StockQuantity = product.StockQuantity,
-                LowStockThreshold = product.LowStockThreshold,
-                TrackQuantity = product.TrackQuantity,
-                Weight = product.Weight,
-                WeightUnit = product.WeightUnit,
-                Status = product.Status,
-                IsFeatured = product.IsFeatured,
-                SortOrder = product.SortOrder,
-                MetaTitle = product.MetaTitle,
-                MetaDescription = product.MetaDescription,
-                Tags = product.Tags,
-                CategoryId = product.CategoryId,
-                CreatedAt = product.CreatedAt,
-                UpdatedAt = product.UpdatedAt
-            };
-            
+            var viewModel = _mapper.Map<ProductEditVM>(product);
             await SetupCreateEditViewBag();
             return View(viewModel);
         }
@@ -200,37 +163,10 @@ namespace newApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var product = await _productService.GetProductByIdAsync(id);
-                if (product == null)
-                {
-                    return NotFound();
-                }
+                var command = _mapper.Map<UpdateProductCommand>(viewModel);
 
                 // Store old image URL for potential deletion
-                var oldImageUrl = product.ImageUrl;
-
-                // Update product properties
-                product.Name = viewModel.Name;
-                product.Description = viewModel.Description;
-                product.Price = viewModel.Price;
-                product.CompareAtPrice = viewModel.CompareAtPrice;
-                product.CostPrice = viewModel.CostPrice;
-                product.ImageAlt = viewModel.ImageAlt;
-                product.Sku = viewModel.Sku;
-                product.Barcode = viewModel.Barcode;
-                product.StockQuantity = viewModel.StockQuantity;
-                product.LowStockThreshold = viewModel.LowStockThreshold;
-                product.TrackQuantity = viewModel.TrackQuantity;
-                product.Weight = viewModel.Weight;
-                product.WeightUnit = viewModel.WeightUnit;
-                product.Status = viewModel.Status;
-                product.IsFeatured = viewModel.IsFeatured;
-                product.SortOrder = viewModel.SortOrder;
-                product.MetaTitle = viewModel.MetaTitle;
-                product.MetaDescription = viewModel.MetaDescription;
-                product.Tags = viewModel.Tags;
-                product.CategoryId = viewModel.CategoryId;
-                product.UpdatedAt = DateTime.UtcNow;
+                var oldImageUrl = viewModel.CurrentImageUrl;
 
                 // Handle image upload
                 if (viewModel.ImageFile != null && _imageService.IsValidImageFile(viewModel.ImageFile))
@@ -238,7 +174,7 @@ namespace newApp.Controllers
                     var imageUrl = await _imageService.UploadImageAsync(viewModel.ImageFile, "products");
                     if (imageUrl != null)
                     {
-                        product.ImageUrl = imageUrl;
+                        command.ImageUrl = imageUrl;
                         
                         // Delete old image if it was uploaded (not external URL)
                         if (!string.IsNullOrEmpty(oldImageUrl) && !oldImageUrl.StartsWith("http"))
@@ -249,7 +185,6 @@ namespace newApp.Controllers
                     else
                     {
                         ModelState.AddModelError("ImageFile", "Failed to upload image. Please try again.");
-                        viewModel.CurrentImageUrl = oldImageUrl;
                         await SetupCreateEditViewBag();
                         return View(viewModel);
                     }
@@ -257,7 +192,7 @@ namespace newApp.Controllers
                 else if (!string.IsNullOrEmpty(viewModel.ImageUrl) && viewModel.ImageUrl != oldImageUrl)
                 {
                     // URL changed, update it
-                    product.ImageUrl = viewModel.ImageUrl;
+                    command.ImageUrl = viewModel.ImageUrl;
                     
                     // Delete old uploaded image if it exists
                     if (!string.IsNullOrEmpty(oldImageUrl) && !oldImageUrl.StartsWith("http"))
@@ -266,7 +201,7 @@ namespace newApp.Controllers
                     }
                 }
 
-                await _productService.UpdateProductAsync(product);
+                var product = await _mediator.Send(command);
                 TempData["SuccessMessage"] = $"Product '{product.Name}' updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
@@ -294,11 +229,18 @@ namespace newApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
+            var product = await _mediator.Send(new GetProductByIdQuery(id));
             if (product != null)
             {
-                await _productService.DeleteProductAsync(id);
-                TempData["SuccessMessage"] = $"Product '{product.Name}' deleted successfully.";
+                var success = await _mediator.Send(new DeleteProductCommand(id));
+                if (success)
+                {
+                    TempData["SuccessMessage"] = $"Product '{product.Name}' deleted successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to delete product.";
+                }
             }
             else
             {

@@ -13,7 +13,7 @@ namespace newApp.Controllers
         {
             _context = context;
         }
-        public IActionResult Details(int id)
+        public IActionResult Details(Guid id)
         {
             var item = _context.Items.FirstOrDefault(x => x.Id == id);
             return View(item); 

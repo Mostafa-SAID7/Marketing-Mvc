@@ -39,7 +39,7 @@ namespace newApp.Services
 
         public async Task UpdateProductAsync(Product product)
         {
-            await _unitOfWork.Products.UpdateAsync(product);
+            _unitOfWork.Products.Update(product);
             await _unitOfWork.SaveChangesAsync();
         }
 
